@@ -78,6 +78,18 @@ HTML
   crop_and_report "$name" "$MOBILE_W" "$h" "$TALL_MOBILE"
 }
 
+# The application picks light or dark from the weather code and daylight, not
+# from the reader's operating system, so the dark capture can only be taken
+# while the instance is actually rendering a night scheme. Check first:
+#   curl -s "$BASE/api/weather" | python3 -c \
+#     "import json,sys;print(json.load(sys.stdin)['current']['is_day'])"
+# and run `tools/capture.sh dark` once that prints False.
+if [ "${1:-}" = "dark" ]; then
+  shoot_desktop climate-desktop-dark '#/climate'
+  echo "Captured into $OUT"
+  exit 0
+fi
+
 shoot_desktop dashboard-desktop '#/'
 shoot_desktop history-desktop   '#/history?range=7d'
 shoot_desktop climate-desktop   '#/climate'
