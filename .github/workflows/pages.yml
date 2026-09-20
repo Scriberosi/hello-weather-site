@@ -27,6 +27,7 @@ jobs:
         run: |
           python3 -m unittest discover -s tools -p 'test_*.py'
           python3 tools/check_page.py index.html
+          python3 tools/check_contrast.py assets/site.css
 
       # Pages must already be enabled for this repository with the
       # "workflow" build type. The Actions token cannot create the Pages

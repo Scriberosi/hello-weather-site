@@ -33,3 +33,10 @@ HTTPS with `gh` as a repo-local credential helper:
 `gh` must be on the `Scriberosi` account (`gh auth switch --user Scriberosi`)
 with the `workflow` scope, which HTTPS pushes of files under
 `.github/workflows/` require.
+
+## Design token provenance
+
+`assets/site.css` copies its tokens from `frontend/src/index.css` in the
+private application repository (copied 2026-09-20). There is no shared build
+step; when the application's palette changes, update the copy by hand and
+re-run `python3 tools/check_contrast.py assets/site.css`.
