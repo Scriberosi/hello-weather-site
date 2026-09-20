@@ -3,9 +3,271 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hello Weather</title>
+    <title>Hello Weather — what it is, and where its numbers come from</title>
+    <meta
+      name="description"
+      content="A private, self-hosted weather dashboard for one location in Hamburg, and a reference on the river, air-quality, forecast and climate data behind it."
+    />
+    <link rel="stylesheet" href="assets/site.css" />
   </head>
   <body>
-    <h1>Hello Weather</h1>
+    <nav class="toc" aria-label="Sections">
+      <ul>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#history">History</a></li>
+        <li><a href="#climate">Climate</a></li>
+        <li><a href="#built">What it doesn't know</a></li>
+        <li><a href="#rivers">Rivers</a></li>
+        <li><a href="#air-quality">Air quality</a></li>
+        <li><a href="#forecast-quality">Forecast quality</a></li>
+        <li><a href="#climate-change">Climate change</a></li>
+        <li><a href="#sources">Sources</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <div class="wrap">
+        <header class="hero">
+          <div class="prose">
+            <h1>Hello Weather</h1>
+            <p class="lede">
+              A weather dashboard for one place: Eppendorf, in Hamburg.
+            </p>
+            <p>
+              It shows the forecast, the level of the small river that runs
+              through the district, the air quality at three nearby measuring
+              stations, and how this year's weather compares with the
+              eighty-six years before it.
+            </p>
+            <p>
+              It runs on a NAS in a flat, for one household. There is nothing
+              here to sign up for and nothing to install. This page explains
+              what it does — and, in the second half, where every number on it
+              comes from.
+            </p>
+          </div>
+        </header>
+
+        <figure>
+          <img
+            src="assets/shots/dashboard-desktop.webp"
+            alt="The dashboard for Eppendorf, Hamburg showing 17 degrees and Overcast, with tiles for feels-like 13 degrees, no precipitation, 56 percent humidity, 25 km/h west wind, sunrise 07:02 and sunset 19:23, above an hourly strip running from 15:00 to midnight and the start of a seven-day forecast."
+            width="1440"
+            height="900"
+          />
+          <figcaption>
+            The dashboard on 20 September 2026. Every figure on this page is a
+            captured value with its date, not a live reading — the app is not
+            reachable from the internet.
+          </figcaption>
+        </figure>
+
+        <section class="prose">
+          <h2 id="dashboard">Dashboard</h2>
+          <hr class="section-rule" />
+          <p>
+            Current conditions sit at the top: temperature, what it feels like,
+            precipitation, humidity, wind, and the day's sunrise and sunset.
+            Below them the next twenty-four hours scroll sideways, then seven
+            days.
+          </p>
+          <p>
+            Two more cards follow further down: the Tarpenbek's water level at
+            five gauges, and air quality from three Hamburg stations. Both get
+            explained properly in the second half of this page.
+          </p>
+          <p>
+            The background is painted from the current weather and time of day
+            — overcast daylight, in the screenshot above — and the browser's own
+            interface colour follows it. The view works from the keyboard,
+            honours reduced-motion settings, and its light and dark palettes are
+            contrast-tested rather than eyeballed.
+          </p>
+        </section>
+
+        <figure>
+          <img
+            src="assets/shots/dashboard-mobile.webp"
+            alt="The same dashboard at phone width, where the six detail tiles reflow into two columns and a three-dot pager appears beside the refresh button."
+            width="390"
+            height="844"
+            loading="lazy"
+            style="max-width: 390px"
+          />
+          <figcaption>
+            At phone width the detail tiles reflow to two columns and a pager
+            appears: the three views can also be swiped between.
+          </figcaption>
+        </figure>
+
+        <section class="prose">
+          <h2 id="history">History</h2>
+          <hr class="section-rule" />
+          <p>
+            Four ranges — twenty-four hours, seven days, thirty days, sixty
+            days. The short ranges draw every hour; the long ones draw daily
+            aggregates computed in the database.
+          </p>
+          <p>
+            Each block states its own coverage rather than quietly drawing
+            whatever it has. "168 of 168 hours" means the week is complete; a
+            gap says so instead of being smoothed over. Days that are missing
+            hours stay visible but are excluded from extremes, and daily buckets
+            handle the 23- and 25-hour days that clock changes produce.
+          </p>
+          <p>
+            Alongside temperature and rainfall there is a wind rose over sixteen
+            sectors, extremes that only count whole days, a calendar heat map,
+            and the Tarpenbek drawn as a stream that can be coloured by water
+            level and scrubbed through time.
+          </p>
+        </section>
+
+        <div class="shot-pair">
+          <figure>
+            <img
+              src="assets/shots/history-desktop.webp"
+              alt="The history view over seven days: a temperature line with a dashed feels-like trace and a shaded daily low-to-high band labelled 168 of 168 hours, a rainfall chart totalling 26 millimetres, and the start of the Tarpenbek gauge section."
+              width="1440"
+              height="900"
+              loading="lazy"
+            />
+          </figure>
+          <figure>
+            <img
+              src="assets/shots/history-mobile.webp"
+              alt="History at phone width with the temperature and rainfall charts stacked above the Tarpenbek stream diagram."
+              width="390"
+              height="844"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+
+        <section class="prose">
+          <h2 id="climate">Climate</h2>
+          <hr class="section-rule" />
+          <p>
+            Five panels, each moving at its own pace. <em>This day against its
+            record</em> redraws daily. <em>This year so far</em> gains a point a
+            day. <em>Water &amp; dryness</em> and <em>Season &amp; extremes</em>
+            track the running year. <em>Long-term trend</em> changes once a
+            year.
+          </p>
+          <p>
+            The archive behind them reaches back to 1940, which is what makes
+            the first panel possible: today's temperature is placed inside the
+            distribution of every comparable day since then, rather than
+            compared with a single date last year.
+          </p>
+        </section>
+
+        <div class="shot-pair">
+          <figure>
+            <img
+              src="assets/shots/climate-desktop.webp"
+              alt="The climate view for 19 September 2026: a note that the last 30 days were 0.9 degrees warmer and received 80 percent more rain than the 1991 to 2020 average, a distribution chart comparing 1961 to 1990 against 1996 to 2025 with the day marked at 19.4 degrees, a line reading warmer than 76 percent of days between 12 and 26 September since 1940, and a card giving the closest historical analogue as Frankfurt."
+              width="1440"
+              height="900"
+              loading="lazy"
+            />
+          </figure>
+          <figure>
+            <img
+              src="assets/shots/climate-mobile.webp"
+              alt="The climate view at phone width with the distribution chart and the Frankfurt analogue card stacked in a single column."
+              width="390"
+              height="844"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </div>
+
+      <div class="band">
+        <div class="inner">
+          <h2 id="built">Built to be honest about what it doesn't know</h2>
+          <p class="divider-note">
+            Most of the work in this app went into the cases where data is
+            missing, late, or wrong. Those cases are visible rather than
+            papered over.
+          </p>
+          <ul class="knows">
+            <li>
+              <b>Stale data says so.</b> If the provider is unreachable, the
+              last good reading is served with a banner explaining that it is
+              old and when it was taken. With nothing usable at all, the API
+              returns an error instead of a guess.
+            </li>
+            <li>
+              <b>A missing comparison stays missing.</b> River level changes are
+              measured against a real stored reading within half an hour of the
+              target time. If there isn't one, the change is empty — not
+              interpolated into something plausible.
+            </li>
+            <li>
+              <b>Scales wait until they mean something.</b> Water levels are
+              only shown on a normalised scale once a gauge has fourteen
+              separate days of history. Until then the raw centimetre reading
+              stands on its own.
+            </li>
+            <li>
+              <b>One failure stays one failure.</b> A broken river gauge does
+              not stale the forecast, and a climate sync failure does not touch
+              current weather. Each source fails on its own.
+            </li>
+            <li>
+              <b>The location stays private.</b> Coordinates, the address, query
+              strings, client addresses and request headers never reach the
+              logs or the cache keys. The public label is the district name, and
+              that is all.
+            </li>
+          </ul>
+          <p class="divider-note" style="margin-top: 1.75rem">
+            Underneath: FastAPI serving both the JSON API and the built
+            single-page app, React and TypeScript in the browser, PostgreSQL for
+            history, Redis as a short-lived cache and task broker, one
+            background worker and one scheduler, all as a Docker Compose project
+            on a NAS at home. The stream geometry is generated offline from
+            public data and checked in as static values, so nothing about
+            geography is fetched at runtime.
+          </p>
+        </div>
+      </div>
+
+      <div class="wrap">
+        <section class="prose">
+          <h2 id="rivers">Rivers</h2>
+          <hr class="section-rule" />
+          <p>Written in Task 6.</p>
+        </section>
+
+        <section class="prose">
+          <h2 id="air-quality">Air quality</h2>
+          <hr class="section-rule" />
+          <p>Written in Task 6.</p>
+        </section>
+
+        <section class="prose">
+          <h2 id="forecast-quality">Forecast quality</h2>
+          <hr class="section-rule" />
+          <p>Written in Task 7.</p>
+        </section>
+
+        <section class="prose">
+          <h2 id="climate-change">Climate change</h2>
+          <hr class="section-rule" />
+          <p>Written in Task 7.</p>
+        </section>
+
+        <section class="prose">
+          <h2 id="sources">Sources and licences</h2>
+          <hr class="section-rule" />
+          <ol class="sources">
+            <li id="src-1">Filled in Task 8.</li>
+          </ol>
+        </section>
+      </div>
+    </main>
   </body>
 </html>
