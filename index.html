@@ -402,13 +402,186 @@
         <section class="prose">
           <h2 id="forecast-quality">Forecast quality</h2>
           <hr class="section-rule" />
-          <p>Written in Task 7.</p>
+          <p>
+            Every forecast the app retrieves is kept. Once the hour it
+            described has passed, the app lines that old forecast up against
+            the provider's own later estimate for the same
+            hour<a class="cite" href="#src-8">8</a>, matched on location,
+            source and time. The history page draws the result.
+          </p>
+          <p>
+            This is a comparison between two model outputs. It is not a
+            comparison against a thermometer, and the app does not describe it
+            as accuracy, skill, or verification. Calling it any of those would
+            be claiming a measurement that was never made.
+          </p>
+
+          <h3>What it does show</h3>
+          <p>
+            How much a forecast moved as its target hour approached. A
+            prediction that barely shifted from four days out to one day out
+            was a stable prediction. One that swung several degrees was the
+            model changing its mind, which is worth knowing at the time you
+            are relying on it.
+          </p>
+
+          <h3>What it cannot show</h3>
+          <p>
+            Whether either number was right. Two estimates can converge
+            neatly and both be wrong in the same direction — convergence
+            measures agreement, and agreement is not correctness. Answering
+            the accuracy question would mean comparing forecasts against
+            observations from these exact coordinates, which this app does not
+            have and does not pretend to.
+          </p>
         </section>
 
         <section class="prose">
           <h2 id="climate-change">Climate change</h2>
           <hr class="section-rule" />
-          <p>Written in Task 7.</p>
+          <p>
+            Most explanations of climate change are global and abstract, which
+            makes them easy to agree with and hard to feel. This one starts
+            with one patch of Hamburg, because that is what the app happens to
+            have an eighty-six-year record for.
+          </p>
+
+          <h3>What the record here says</h3>
+          <p>
+            As of 19 September 2026, the previous thirty days at this location
+            were 0.9&nbsp;&deg;C warmer and received 80&nbsp;% more rain than
+            the 1991&ndash;2020 average for those same calendar dates.
+          </p>
+          <p>
+            That day itself reached 19.4&nbsp;&deg;C, warmer than
+            76&nbsp;% of all days between 12 and 26 September recorded since
+            1940. And the location's present-day climate, taken as a
+            thirty-year average, now sits closest to the 1961&ndash;1990
+            climate of <b>Frankfurt</b> among the cities the app compares.
+          </p>
+          <p>
+            That last sentence is the one worth slowing down on, so the rest of
+            this section is mostly about what it does and does not mean.
+          </p>
+
+          <h3>What a climate normal is</h3>
+          <p>
+            Climate is described in thirty-year averages, called normals. The
+            World Meteorological Organization sets the
+            convention<a class="cite" href="#src-9">9</a>: a standard period of
+            thirty years, updated every ten, which is why 1961&ndash;1990 and
+            1991&ndash;2020 are the two reference periods used here rather than
+            some window chosen to flatter a conclusion.
+          </p>
+          <p>
+            Thirty years is long enough that an unusual decade does not
+            dominate the average, and short enough to describe a climate people
+            actually lived through. Comparing two normals thirty years apart
+            compares two climates, not two years.
+          </p>
+
+          <h3>Thirty days of weather is still not climate</h3>
+          <p>
+            A warm month is weather. The app is careful not to let a warm month
+            masquerade as a changed climate, which is why the main panel draws
+            a distribution rather than a number.
+          </p>
+          <p>
+            For the current date it gathers every day within a week either side
+            of that date, across the whole record back to 1940, and plots how
+            often each temperature occurred — once for 1961&ndash;1990 and
+            again for the most recent thirty years. Today's value is a line
+            through those two curves. You can see immediately whether today is
+            ordinary, and whether the shape of ordinary has moved.
+          </p>
+          <p>
+            A single warm day sits somewhere in a wide distribution. It is the
+            distribution shifting that means something, and a distribution
+            cannot shift in a week.
+          </p>
+
+          <h3>What the Frankfurt comparison claims</h3>
+          <p>
+            It compares climate normals with climate normals: this location's
+            1991&ndash;2020 averages against the 1961&ndash;1990 averages of a
+            fixed list of reference cities, across annual temperature, summer
+            temperature and annual precipitation. Frankfurt is simply the
+            closest match among the cities compared.
+          </p>
+          <p>
+            It does not claim that Hamburg has become Frankfurt. Two places
+            with similar averages still differ in everything the averages leave
+            out — when the rain falls, how hard the frosts bite, what the wind
+            does. It is a statement about numbers, not about character.
+          </p>
+          <p>
+            The comparison is also capable of finding nothing. This location's
+            own 1961&ndash;1990 normal competes in the same ranking, and if it
+            were still the closest match, the app would say the climate here is
+            still closest to its own older climate. It names another city only
+            when another city genuinely fits better.
+          </p>
+
+          <h3>Water balance is not soil moisture</h3>
+          <p>
+            The dryness panel shows a climatic water balance: precipitation
+            minus reference evapotranspiration, the standard
+            FAO&nbsp;56 calculation<a class="cite" href="#src-13">13</a> of how
+            much water the atmosphere would draw off a well-watered reference
+            surface.
+          </p>
+          <p>
+            It describes atmospheric drying demand — how hard the air is
+            pulling — not how much water is actually in the ground. Real soil
+            moisture depends on soil type, what is growing, what fell last
+            month and where it drained to. A strongly negative balance means
+            conditions favour drying, not that the garden is dry.
+          </p>
+
+          <h3>These are model estimates, not the garden thermometer</h3>
+          <p>
+            Nothing on the climate page was measured at this address. The
+            archive is reanalysis<a class="cite" href="#src-12">12</a>: a model
+            reconstruction that blends historical observations into a physically
+            consistent grid, giving continuous daily values back to 1940 at the
+            configured coordinates. It is the best available answer for a
+            specific point, and it is still a model's answer.
+          </p>
+          <p>
+            There is a concrete tell. The archive's sunshine duration for this
+            location runs roughly 1.6 to 1.7 times what nearby stations
+            measure — about 2,500 hours a year against roughly 1,600 measured.
+            That is the reason sunshine is never displayed anywhere in the app.
+            It is fine for comparing the archive against itself across decades,
+            which is all the app asks of it, and it would be misleading as a
+            figure to quote. Where a quantity could not be shown honestly, it
+            was removed rather than footnoted.
+          </p>
+
+          <h3>What this page will not tell you</h3>
+          <p>
+            It will not attribute any particular day, storm or warm month here
+            to climate change. Not because the link is doubtful in general, but
+            because attributing a single local event is a specific scientific
+            exercise, and reading a chart is not that exercise.
+          </p>
+          <p>
+            That exercise exists and is done properly by others: attribution
+            studies<a class="cite" href="#src-14">14</a> run large ensembles of
+            climate model simulations of a world with today's warming and a
+            counterfactual world without it, then compare how often the event
+            appears in each. The output is a change in likelihood or intensity,
+            with stated uncertainty — the kind of conclusion that takes a team
+            and months, and that no dashboard can produce from its own history.
+          </p>
+          <p>
+            What this app can honestly say is narrower and still worth saying:
+            over eighty-six years at one location, the distribution has moved,
+            the thirty-year averages have moved, and the climate here now most
+            resembles somewhere that used to be meaningfully further
+            south.<a class="cite" href="#src-10">10</a><a class="cite"
+            href="#src-11">11</a>
+          </p>
         </section>
 
         <section class="prose">
@@ -454,6 +627,36 @@
               for Europe.
               <a href="https://eur-lex.europa.eu/eli/dir/2024/2881/oj">eur-lex.europa.eu</a>.
               Retrieved DATE.
+            </li>
+            <li id="src-8">
+              Open-Meteo, forecast and historical weather APIs.
+              PENDING-URL Retrieved PENDING-DATE.
+            </li>
+            <li id="src-9">
+              World Meteorological Organization, WMO Guidelines on the
+              Calculation of Climate Normals (WMO-No. 1203).
+              PENDING-URL Retrieved PENDING-DATE.
+            </li>
+            <li id="src-10">
+              Deutscher Wetterdienst, climate monitoring for Germany.
+              PENDING-URL Retrieved PENDING-DATE.
+            </li>
+            <li id="src-11">
+              IPCC, Sixth Assessment Report, Working Group I: The Physical
+              Science Basis. PENDING-URL Retrieved PENDING-DATE.
+            </li>
+            <li id="src-12">
+              Copernicus Climate Change Service, ERA5 reanalysis
+              documentation. PENDING-URL Retrieved PENDING-DATE.
+            </li>
+            <li id="src-13">
+              FAO, Irrigation and Drainage Paper 56: Crop evapotranspiration
+              &mdash; guidelines for computing crop water requirements.
+              PENDING-URL Retrieved PENDING-DATE.
+            </li>
+            <li id="src-14">
+              World Weather Attribution, method description.
+              PENDING-URL Retrieved PENDING-DATE.
             </li>
           </ol>
         </section>
