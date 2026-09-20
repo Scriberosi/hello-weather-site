@@ -2,7 +2,25 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from check_page import check_page
+from check_page import REQUIRED_ANCHORS, _required_for, check_page
+
+# A magazine issue page, shaped like templates/magazine/issue.html.j2: an
+# <article class="issue">, one h1, no landmark anchors, inline SVG figures, and
+# an episode nav whose fragment links resolve to their sections.
+ISSUE = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>A warm, dry September</title>
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="../assets/magazine.css"></head>
+<body><article class="issue">
+<header class="issue__head"><h1>A warm, dry September</h1></header>
+<figure class="issue__spine"><svg role="img"><title>Spine</title></svg></figure>
+<nav class="issue__anchors"><a href="#e1">warm spell</a></nav>
+<section class="issue__section"><h2>What the month did</h2></section>
+<section class="issue__section"><h2>Episodes</h2>
+<section class="issue__episode" id="e1"><h3>The warm spell</h3></section></section>
+<section class="issue__section"><h2>By the numbers</h2></section>
+<footer class="issue__foot"><a href="https://open-meteo.com/">Open-Meteo</a></footer>
+</article></body></html>"""
 
 GOOD = """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <title>T</title><link rel="stylesheet" href="assets/site.css"></head>
@@ -71,6 +89,47 @@ class CheckPageTest(unittest.TestCase):
 
     def test_required_anchor_missing_is_reported(self):
         self.assertIn("rivers", " ".join(self.check(GOOD, required={"rivers"})))
+
+    def test_the_single_page_site_still_requires_its_landmarks(self):
+        self.assertEqual(_required_for(GOOD), REQUIRED_ANCHORS)
+
+    def test_a_magazine_issue_page_requires_no_landmark_anchors(self):
+        self.assertEqual(_required_for(ISSUE), set())
+
+    def test_the_archive_index_requires_no_landmark_anchors(self):
+        self.assertEqual(_required_for('<main class="archive">'), set())
+
+    def test_a_well_formed_issue_page_passes_the_generic_checks(self):
+        # No landmark anchors are required, but the episode nav must still
+        # resolve, the heading order must hold, and there is exactly one h1.
+        self.assertEqual(self.check(ISSUE, required=_required_for(ISSUE)), [])
+
+    def test_a_dangling_episode_anchor_is_still_reported_on_an_issue_page(self):
+        broken = ISSUE.replace('id="e1"', 'id="e2"')
+        problems = self.check(broken, required=_required_for(broken))
+        self.assertIn("e1", " ".join(problems))
+
+
+class SiteDiscoverabilityTest(unittest.TestCase):
+    """The magazine and its feed must be reachable from the public page."""
+
+    def setUp(self):
+        self.root = Path(__file__).resolve().parents[1]
+        self.index = (self.root / "index.html").read_text(encoding="utf-8")
+
+    def test_the_page_links_to_a_deployable_magazine_archive(self):
+        self.assertIn('href="issues/index.html"', self.index)
+        self.assertTrue((self.root / "issues" / "index.html").is_file())
+
+    def test_the_page_advertises_a_deployable_atom_feed(self):
+        self.assertIn('rel="alternate"', self.index)
+        self.assertIn('type="application/atom+xml"', self.index)
+        self.assertIn('href="feed.xml"', self.index)
+        self.assertTrue((self.root / "feed.xml").is_file())
+
+    def test_full_bleed_issue_spine_cannot_create_page_overflow(self):
+        css = (self.root / "assets" / "magazine.css").read_text(encoding="utf-8")
+        self.assertRegex(css, r"html\s*\{[^}]*overflow-x:\s*clip")
 
 
 if __name__ == "__main__":
