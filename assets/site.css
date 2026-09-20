@@ -249,7 +249,7 @@ section + section { margin-top: clamp(2.5rem, 6vw, 4rem); }
   padding-top: 0.6rem;
   font-size: 0.97rem;
 }
-.knows b { color: var(--text); font-weight: 650; display: block; }
+.knows b { color: var(--text); font-weight: 650; display: block; margin-bottom: 0.25rem; }
 
 /* Two hashes as equals. Neither is struck through, because neither was
    shown to be wrong. */

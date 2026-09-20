@@ -16,7 +16,7 @@
         <li><a href="#dashboard">Dashboard</a></li>
         <li><a href="#history">History</a></li>
         <li><a href="#climate">Climate</a></li>
-        <li><a href="#built">What it doesn't know</a></li>
+        <li><a href="#built">Missing data</a></li>
         <li><a href="#rivers">Rivers</a></li>
         <li><a href="#air-quality">Air quality</a></li>
         <li><a href="#forecast-quality">Forecast quality</a></li>
@@ -186,50 +186,48 @@
 
       <div class="band" id="built">
         <div class="inner">
-          <h2>Built to be honest about what it doesn't know</h2>
+          <h2>When data is missing or late</h2>
           <p class="divider-note">
-            Most of the work in this app went into the cases where data is
-            missing, late, or wrong. Those cases are visible rather than
-            papered over.
+            Providers time out, gauges stop reporting, and the climate archive
+            runs behind. What the app does in each case:
           </p>
           <ul class="knows">
             <li>
-              <b>Stale data says so.</b> If the provider is unreachable, the
-              last good reading is served with a banner explaining that it is
-              old and when it was taken. With nothing usable at all, the API
-              returns an error instead of a guess.
+              <b>The forecast provider is unreachable</b>
+              The last stored reading is shown with its timestamp and a banner
+              saying how old it is. If nothing usable is stored, the API
+              returns 503.
             </li>
             <li>
-              <b>A missing comparison stays missing.</b> River level changes are
-              measured against a real stored reading within half an hour of the
-              target time. If there isn't one, the change is empty — not
-              interpolated into something plausible.
+              <b>No gauge reading near the comparison time</b>
+              A 6, 12 or 24-hour change needs a stored reading within 30
+              minutes of the target time. Without one, the change field is
+              empty.
             </li>
             <li>
-              <b>Scales wait until they mean something.</b> Water levels are
-              only shown on a normalised scale once a gauge has fourteen
-              separate days of history. Until then the raw centimetre reading
-              stands on its own.
+              <b>A gauge has little history</b>
+              The normalised level scale needs readings from 14 separate days
+              at that gauge. Until then the raw centimetre height is shown on
+              its own.
             </li>
             <li>
-              <b>One failure stays one failure.</b> A broken river gauge does
-              not stale the forecast, and a climate sync failure does not touch
-              current weather. Each source fails on its own.
+              <b>One source fails</b>
+              Gauge, air-quality and climate failures are isolated from each
+              other and from the forecast.
             </li>
             <li>
-              <b>The location stays private.</b> Coordinates, the address, query
-              strings, client addresses and request headers never reach the
-              logs or the cache keys. The public label is the district name, and
-              that is all.
+              <b>Logging and caching</b>
+              Coordinates, the address, query strings, client addresses and
+              request headers are excluded from logs and cache keys.
             </li>
           </ul>
           <p class="divider-note" style="margin-top: 1.75rem">
-            Underneath: FastAPI serving both the JSON API and the built
-            single-page app, React and TypeScript in the browser, PostgreSQL for
-            history, Redis as a short-lived cache and task broker, one
-            background worker and one scheduler, all as a Docker Compose project
-            on a NAS at home. The stream geometry is generated offline from
-            public data and checked in as static values, so nothing about
+            The app is FastAPI serving both the JSON API and the built
+            single-page app, React and TypeScript in the browser, PostgreSQL
+            for history, Redis as a short-lived cache and task broker, one
+            background worker and one scheduler, running as a Docker Compose
+            project on a NAS at home. Stream geometry is generated offline from
+            public data and committed as static values, so nothing about
             geography is fetched at runtime.
           </p>
         </div>
@@ -255,7 +253,7 @@
             over time.
           </p>
 
-          <h3>Why a change is a real measurement, or nothing</h3>
+          <h3>How a level change is calculated</h3>
           <p>
             The app shows how much each gauge has moved over six, twelve and
             twenty-four hours. That change is the latest reading minus an
@@ -272,7 +270,7 @@
             flood gauge does not want.
           </p>
 
-          <h3>Why the colour scale arrives late</h3>
+          <h3>When the colour scale becomes available</h3>
           <p>
             The stream diagram can be coloured by how high each gauge is
             running, which requires knowing what normal looks like there. The
@@ -290,7 +288,7 @@
             available from the first day.
           </p>
 
-          <h3>Where the map comes from, hashes and all</h3>
+          <h3>Where the map data comes from</h3>
           <p>
             The stream drawn on the history page is not a map tile and not a
             live query. It is generated offline from two public inputs —
@@ -419,7 +417,7 @@
             be claiming a measurement that was never made.
           </p>
 
-          <h3>What it does show</h3>
+          <h3>What convergence indicates</h3>
           <p>
             How much a forecast moved as its target hour approached. A
             prediction that barely shifted from four days out to one day out
@@ -428,7 +426,7 @@
             are relying on it.
           </p>
 
-          <h3>What it cannot show</h3>
+          <h3>What it cannot tell you</h3>
           <p>
             Whether either number was right. Two estimates can converge
             neatly and both be wrong in the same direction — convergence
@@ -541,7 +539,7 @@
             conditions favour drying, not that the garden is dry.
           </p>
 
-          <h3>These are model estimates, not the garden thermometer</h3>
+          <h3>The archive is a model reconstruction</h3>
           <p>
             Nothing on the climate page was measured at this address. The
             archive is reanalysis<a class="cite" href="#src-11">11</a>: a model
