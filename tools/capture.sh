@@ -1,81 +1,88 @@
 #!/usr/bin/env bash
-# Reproducible screenshot capture for the public page.
+# Reproducible full-page screenshot capture for the public page.
 #
-# Requires the local Hello Weather stack running (Vite dev server on :5173,
-# API on :8000) with a synced climate archive, plus Chrome and cwebp.
+# Point BASE at a running Hello Weather instance that serves both the API and
+# the UI on one origin, and has a synced climate archive:
 #
-# Usage: tools/capture.sh
+#   BASE=http://<host>:<port> CWEBP=/opt/homebrew/bin/cwebp tools/capture.sh
 #
-# Why mobile captures go through an iframe: Chrome on macOS refuses to make a
-# window narrower than 500 CSS px, so `--window-size=390,844` yields a 500px
-# viewport and the application's `max-width: 480px` rules never apply -- the
-# result is a desktop layout cropped to phone size. Rendering the app inside a
-# 390px iframe gives it a genuine 390px viewport, and the shot is then cropped
-# back to the iframe's box.
+# These are dashboards, so every shot is the whole page, not the first
+# viewport. Chrome only ever screenshots its viewport, so each page is
+# rendered into a deliberately over-tall window and then cropped back to where
+# the content actually ends -- tools/content_height.py finds that line by
+# scanning up from the bottom for the first row that is not flat background.
+#
+# Mobile shots additionally render the app inside a 390px iframe. Chrome on
+# macOS will not make a window narrower than 500 CSS px, so --window-size=390
+# silently yields a 500px viewport, the app's max-width:480px rules never
+# apply, and the result is a desktop layout cropped to phone size.
 set -Eeuo pipefail
 
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 CWEBP="${CWEBP:-cwebp}"
 BASE="${BASE:-http://localhost:5173}"
-OUT="$(cd "$(dirname "$0")/.." && pwd)/assets/shots"
-TOOLS="$(cd "$(dirname "$0")" && pwd)"
+DESKTOP_W=1440
+MOBILE_W=390
+TALL_DESKTOP=9000
+TALL_MOBILE=12000
+QUALITY=80
+WAIT_MS=20000
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+OUT="$(cd "$HERE/.." && pwd)/assets/shots"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-
 mkdir -p "$OUT"
 
-report() {
-  TOOLS="$TOOLS" python3 - "$1" <<'PYDIM'
-import os
-import sys
-from pathlib import Path
+echo "Capturing from $BASE"
 
-sys.path.insert(0, os.environ["TOOLS"])
-from check_page import webp_size  # noqa: E402
-
-path = Path(sys.argv[1])
-print("%s %dx%d" % (path.name, *webp_size(path.read_bytes())))
-PYDIM
+crop_and_report() {
+  local name="$1" width="$2" height="$3" tall="$4"
+  if [ "$height" -ge "$((tall - 2))" ]; then
+    echo "WARNING: $name filled the ${tall}px render window -- it is probably" \
+         "clipped. Raise TALL_* and re-run." >&2
+  fi
+  "$CWEBP" -q "$QUALITY" -quiet -crop 0 0 "$width" "$height" \
+    "$TMP/$name.png" -o "$OUT/$name.webp"
+  echo "$name.webp ${width}x${height}"
 }
 
-# Desktop: the viewport is wider than Chrome's 500px floor, so shoot directly.
 shoot_desktop() {
-  local name="$1" route="$2" width="$3" height="$4"
+  local name="$1" route="$2"
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars \
-    --window-size="${width},${height}" \
-    --virtual-time-budget=15000 \
-    --screenshot="$TMP/$name.png" \
-    "$BASE/$route" 2>/dev/null
-  "$CWEBP" -q 82 -quiet "$TMP/$name.png" -o "$OUT/$name.webp"
-  report "$OUT/$name.webp"
+    --window-size="${DESKTOP_W},${TALL_DESKTOP}" \
+    --virtual-time-budget="$WAIT_MS" \
+    --screenshot="$TMP/$name.png" "$BASE/$route" 2>/dev/null
+  local h
+  h="$(python3 "$HERE/content_height.py" "$TMP/$name.png")"
+  crop_and_report "$name" "$DESKTOP_W" "$h" "$TALL_DESKTOP"
 }
 
-# Mobile: render inside an iframe of the target size, then crop to it.
 shoot_mobile() {
-  local name="$1" route="$2" width="$3" height="$4"
+  local name="$1" route="$2"
   cat > "$TMP/$name.html" <<HTML
 <!doctype html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;padding:0;background:#fff}
-iframe{width:${width}px;height:${height}px;border:0;display:block}
+iframe{width:${MOBILE_W}px;height:${TALL_MOBILE}px;border:0;display:block}
 </style></head><body>
 <iframe src="${BASE}/${route}" title="app"></iframe>
 </body></html>
 HTML
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars \
-    --window-size="$((width + 210)),$((height + 60))" \
-    --virtual-time-budget=15000 \
-    --screenshot="$TMP/$name.png" \
-    "file://$TMP/$name.html" 2>/dev/null
-  "$CWEBP" -q 82 -quiet -crop 0 0 "$width" "$height" \
-    "$TMP/$name.png" -o "$OUT/$name.webp"
-  report "$OUT/$name.webp"
+    --window-size="$((MOBILE_W + 260)),${TALL_MOBILE}" \
+    --virtual-time-budget="$WAIT_MS" \
+    --screenshot="$TMP/$name.png" "file://$TMP/$name.html" 2>/dev/null
+  local h
+  # Scan only the iframe's columns; the white wrapper beside it is not content.
+  h="$(python3 "$HERE/content_height.py" "$TMP/$name.png" --width "$MOBILE_W")"
+  crop_and_report "$name" "$MOBILE_W" "$h" "$TALL_MOBILE"
 }
 
-shoot_desktop dashboard-desktop '#/'                  1440 900
-shoot_desktop history-desktop   '#/history?range=7d'  1440 900
-shoot_desktop climate-desktop   '#/climate'           1440 900
-shoot_mobile  dashboard-mobile  '#/'                  390  844
-shoot_mobile  history-mobile    '#/history?range=7d'  390  844
-shoot_mobile  climate-mobile    '#/climate'           390  844
+shoot_desktop dashboard-desktop '#/'
+shoot_desktop history-desktop   '#/history?range=7d'
+shoot_desktop climate-desktop   '#/climate'
+shoot_mobile  dashboard-mobile  '#/'
+shoot_mobile  history-mobile    '#/history?range=7d'
+shoot_mobile  climate-mobile    '#/climate'
 
 echo "Captured into $OUT"

@@ -129,14 +129,20 @@ figcaption {
   max-width: var(--measure);
 }
 
-.shot-pair {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
-  align-items: start;
-}
-@media (max-width: 700px) {
-  .shot-pair { grid-template-columns: 1fr; }
+/* Dashboard captures are the whole page, because the scope is the point. */
+figure.full img { width: 100%; }
+
+/* Phone captures run to three or four thousand pixels. Showing one whole
+   would be a dozen screens of scrolling for a single image, so the display is
+   capped and faded out; the file itself is still the full page. */
+.shot-mobile img {
+  width: 390px;
+  max-width: 100%;
+  max-height: 900px;
+  object-fit: cover;
+  object-position: top;
+  -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
 }
 
 nav.toc {
