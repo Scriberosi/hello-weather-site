@@ -239,13 +239,164 @@
         <section class="prose">
           <h2 id="rivers">Rivers</h2>
           <hr class="section-rule" />
-          <p>Written in Task 6.</p>
+          <p>
+            The Tarpenbek is a small watercourse, a few metres across, that
+            runs through the district and feeds into the Alster. Hamburg's
+            flood warning service publishes water levels for gauges along
+            it<a class="cite" href="#src-1">1</a>, and the app reads them every
+            fifteen minutes, keeping every measurement rather than only the
+            latest one.
+          </p>
+          <p>
+            Five gauges are shown in upstream-to-downstream order. Each keeps
+            its own scale, because the published figures are heights above sea
+            level in centimetres: one gauge's number compared with another's
+            tells you nothing. What is comparable is a gauge against itself,
+            over time.
+          </p>
+
+          <h3>Why a change is a real measurement, or nothing</h3>
+          <p>
+            The app shows how much each gauge has moved over six, twelve and
+            twenty-four hours. That change is the latest reading minus an
+            actual stored reading from around the target time — within half an
+            hour of it, and no further. When two readings are equally close,
+            the later one wins.
+          </p>
+          <p>
+            If no reading exists inside that window, there is no change. The
+            app does not interpolate between the readings on either side to
+            produce a number. On a small stream that can rise quickly after
+            rain, an interpolated level is a guess wearing the clothes of a
+            measurement, and a guess is exactly what someone looking at a
+            flood gauge does not want.
+          </p>
+
+          <h3>Why the colour scale arrives late</h3>
+          <p>
+            The stream diagram can be coloured by how high each gauge is
+            running, which requires knowing what normal looks like there. The
+            app builds that from the gauge's own history: the fifth and
+            ninety-fifth percentiles of everything it has stored, with the
+            current level placed between them.
+          </p>
+          <p>
+            That only switches on after a gauge has readings from fourteen
+            separate days, and only if those two percentiles actually differ.
+            Before then the colour scale is absent and the raw centimetre
+            reading stands alone. A normalised scale built on two days of data
+            would look authoritative and mean nothing. Warning levels, which
+            come from the source rather than from accumulated history, are
+            available from the first day.
+          </p>
+
+          <h3>Where the map comes from, hashes and all</h3>
+          <p>
+            The stream drawn on the history page is not a map tile and not a
+            live query. It is generated offline from two public inputs —
+            OpenStreetMap ways named Tarpenbek<a class="cite" href="#src-3">3</a>
+            and the coordinates in Hamburg's gauge archive — projected,
+            joined, checked for ordering, and committed as static values. At
+            runtime the app fetches no tiles, loads no mapping library, and
+            makes no geographic request at all.
+          </p>
+          <p>
+            Verifying that archive download produced an awkward result. The
+            file that was downloaded and used hashes to one value. Hamburg's
+            own catalogue metadata lists a different one for that resource:
+          </p>
+          <div class="hashes">
+            <div>
+              <span>SHA-256 of the file actually downloaded and used</span>
+              <code>a2f83f7711a59c8ef13fcc74988a52938f2cb51ea49e0002da1971e3859a80d6</code>
+            </div>
+            <div>
+              <span>SHA-256 listed in Hamburg's catalogue metadata</span>
+              <code>7a63e4f829762ec0a65c42d9e94442d3dc94440299890cab798874f8b3146865</code>
+            </div>
+          </div>
+          <p>
+            Both are recorded, and neither is presented as the winner. The
+            tempting move is to quietly keep the hash that matches and describe
+            the check as passed. It did not pass. Publishing one number would
+            have turned an unresolved discrepancy into a claim of verification,
+            which is worse than having no checksum at all — a reader would
+            trust it more, on less.
+          </p>
+          <p>
+            Gauge data is published by Hamburg under the dl-de/by-2.0
+            licence<a class="cite" href="#src-2">2</a>; the stream geometry is
+            OpenStreetMap data under ODbL<a class="cite" href="#src-3">3</a>.
+            Both credits appear in the app itself, on every screen, because
+            naming the source is a licence condition rather than a courtesy.
+          </p>
         </section>
 
         <section class="prose">
           <h2 id="air-quality">Air quality</h2>
           <hr class="section-rule" />
-          <p>Written in Task 6.</p>
+          <p>
+            The app shows two kinds of number that are easy to confuse. One is
+            a measured concentration — how much of a pollutant is in the air,
+            in micrograms per cubic metre. The other is an index: a single
+            value from 1 to 5 summarising those concentrations into a verdict
+            like "good" or "poor".
+          </p>
+          <p>
+            They come from different publications. The concentrations are
+            measurements from the Umweltbundesamt's Air Data
+            service<a class="cite" href="#src-4">4</a>. Hamburg's own 1-to-5
+            index is published separately by the city's
+            Luftmessnetz<a class="cite" href="#src-5">5</a>. The
+            Umweltbundesamt also computes an index of its own, and it is not
+            the same thing as Hamburg's — so the app keeps the two apart and
+            timestamps them independently, because they are revised on
+            different schedules.
+          </p>
+          <p>
+            Three stations are shown: Niendorf, Sternschanze and
+            Habichtstraße. They are not interchangeable. A station beside a
+            busy road measures the road; an urban background station measures
+            the air the district generally sits in. A traffic station reading
+            higher than a background one is the instrument working, not a
+            fault.
+          </p>
+          <p>
+            Recent observations are provisional. Values from the last hours can
+            be revised once the operator has quality-checked them, so a number
+            that changes after the fact has not gone wrong.
+          </p>
+
+          <h3>What an index does not tell you</h3>
+          <p>
+            A 1-to-5 index answers "is the air good right now". It does not
+            answer whether a legal limit has been met, and the app never
+            presents it as if it did.
+          </p>
+          <p>
+            German and European limits are not instantaneous thresholds. They
+            are defined over specific averaging periods, with allowances for a
+            permitted number of exceedances per year, and with separate targets
+            for ozone. A day can look poor on the index without any limit being
+            breached, and a limit can be breached across a year of days that
+            each looked acceptable.
+          </p>
+          <p>
+            The World Health Organization's 2021 guidelines<a class="cite"
+            href="#src-6">6</a> are stricter than the legal limits and are
+            recommendations, not law. They also use their own conventions — a
+            99th-percentile rule for short-term values, and a six-month peak
+            season for ozone — so a WHO figure and a legal figure are not
+            directly comparable even when both are expressed in the same units.
+          </p>
+          <p>
+            Directive (EU) 2024/2881<a class="cite" href="#src-7">7</a> has
+            been in force since December 2024 and sets considerably stricter
+            standards to be met by 2030, which member states must still
+            implement nationally. This app does not apply those future
+            standards to today's readings. When they take effect, the same
+            measurements will be judged against a harder line.
+          </p>
         </section>
 
         <section class="prose">
@@ -264,7 +415,46 @@
           <h2 id="sources">Sources and licences</h2>
           <hr class="section-rule" />
           <ol class="sources">
-            <li id="src-1">Filled in Task 8.</li>
+            <li id="src-1">
+              Warndienst Binnenhochwasser Hamburg (LSBG), gauge readings.
+              <a href="https://www.wabiha.de/">wabiha.de</a>. Data licensed
+              dl-de/by-2.0; attribution: Freie und Hansestadt Hamburg.
+              Retrieved DATE.
+            </li>
+            <li id="src-2">
+              Datenlizenz Deutschland &mdash; Namensnennung 2.0.
+              <a href="https://www.govdata.de/dl-de/by-2-0">govdata.de/dl-de/by-2-0</a>.
+              Retrieved DATE.
+            </li>
+            <li id="src-3">
+              OpenStreetMap contributors, stream geometry, licensed ODbL 1.0.
+              <a href="https://www.openstreetmap.org/copyright">openstreetmap.org/copyright</a>.
+              Retrieved DATE.
+            </li>
+            <li id="src-4">
+              Umweltbundesamt, Air Data.
+              <a href="https://luftdaten.umweltbundesamt.de/">luftdaten.umweltbundesamt.de</a>.
+              Umweltbundesamt mit Daten der Messnetze der L&auml;nder und des
+              Bundes. Retrieved DATE.
+            </li>
+            <li id="src-5">
+              Freie und Hansestadt Hamburg, Institut f&uuml;r Hygiene und
+              Umwelt, Luftmessnetz.
+              <a href="https://www.hamburg.de/luftguetemessnetz/">hamburg.de/luftguetemessnetz</a>.
+              Retrieved DATE.
+            </li>
+            <li id="src-6">
+              World Health Organization, WHO global air quality guidelines
+              (2021).
+              <a href="https://www.who.int/publications/i/item/9789240034228">who.int</a>.
+              Retrieved DATE.
+            </li>
+            <li id="src-7">
+              Directive (EU) 2024/2881 on ambient air quality and cleaner air
+              for Europe.
+              <a href="https://eur-lex.europa.eu/eli/dir/2024/2881/oj">eur-lex.europa.eu</a>.
+              Retrieved DATE.
+            </li>
           </ol>
         </section>
       </div>
