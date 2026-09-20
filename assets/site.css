@@ -159,6 +159,12 @@ nav.toc ul {
 nav.toc a { color: var(--text); text-decoration: none; font-size: 0.9rem; }
 nav.toc a:hover, nav.toc a:focus-visible { text-decoration: underline; }
 
+/* On a phone the nav wraps to three rows; sticking it there would cost about
+   a tenth of the viewport for the whole page. Let it scroll away instead. */
+@media (max-width: 700px) {
+  nav.toc { position: static; }
+}
+
 a { color: var(--text); }
 a.cite {
   font-size: 0.7em;
@@ -172,7 +178,7 @@ ol.sources { max-width: var(--measure); }
 ol.sources li { margin-bottom: 0.8rem; }
 
 /* The sticky nav would otherwise cover the heading an anchor jumps to. */
-section, h2, h3 { scroll-margin-top: 4.5rem; }
+section, .band, h2, h3 { scroll-margin-top: 4.5rem; }
 
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; }
