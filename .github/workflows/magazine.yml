@@ -21,6 +21,10 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
+    # The tailnet credentials are environment-scoped in the application
+    # repository; mirroring that keeps one set of secrets with one set of
+    # protection rules rather than a second copy at repository level.
+    environment: production
     steps:
       # Publication is gated on main: Pages deploys from main, and the
       # overwrite guard below only means anything against main's issues/.
@@ -64,7 +68,9 @@ jobs:
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
+          # Must match the tag the OAuth client is authorised for;
+          # release.yml in the application repository uses the same one.
+          tags: tag:github-actions
           ping: ${{ vars.NAS_TAILSCALE_HOST }}
 
       - name: Fetch the generated issue
