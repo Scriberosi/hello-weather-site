@@ -5,5 +5,12 @@
 <link rel="self" href="https://scriberosi.github.io/hello-weather-site/feed.xml"/>
 <id>https://scriberosi.github.io/hello-weather-site/</id>
 <author><name>Hello Weather — Climate Magazine</name></author>
-<updated>1970-01-01T00:00:00Z</updated>
+<updated>2026-08-01T00:00:00Z</updated>
+<entry>
+<title>August at Eppendorf, Hamburg</title>
+<link href="https://scriberosi.github.io/hello-weather-site/issues/2026-08.html"/>
+<id>https://scriberosi.github.io/hello-weather-site/issues/2026-08.html</id>
+<updated>2026-08-01T00:00:00Z</updated>
+<summary>This issue was assembled without a language model, from computed figures alone.</summary>
+</entry>
 </feed>
