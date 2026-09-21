@@ -9,6 +9,8 @@
       content="A private, self-hosted weather dashboard for one location in Hamburg, and a reference on the river, air-quality, forecast and climate data behind it."
     />
     <link rel="stylesheet" href="assets/site.css" />
+    <link rel="icon" href="assets/favicon.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
     <link
       rel="alternate"
       type="application/atom+xml"
@@ -19,6 +21,7 @@
   <body>
     <nav class="toc" aria-label="Sections">
       <ul>
+        <li class="brand"><span class="mark" aria-hidden="true"></span>Hello Weather</li>
         <li><a href="#dashboard">Dashboard</a></li>
         <li><a href="#history">History</a></li>
         <li><a href="#climate">Climate</a></li>
@@ -36,7 +39,16 @@
       <div class="wrap">
         <header class="hero">
           <div class="prose">
-            <h1>Hello Weather</h1>
+            <div class="brandline">
+              <img
+                class="mark-lg"
+                src="assets/werner.webp"
+                alt="Werner, an otter in sunglasses, surfacing in a lake below mountains at sunrise."
+                width="208"
+                height="208"
+              />
+              <h1>Hello Weather</h1>
+            </div>
             <p class="lede">
               A weather dashboard for one place: Eppendorf, in Hamburg.
             </p>

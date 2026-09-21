@@ -165,6 +165,42 @@ nav.toc ul {
 nav.toc a { color: var(--text); text-decoration: none; font-size: 0.9rem; }
 nav.toc a:hover, nav.toc a:focus-visible { text-decoration: underline; }
 
+/* Identity mark. The nav copy is decorative and drawn as a background, so
+   assistive tech announces the wordmark once rather than twice. */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 650;
+  color: var(--text);
+  margin-right: 0.35rem;
+}
+.brand .mark {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  background: url("werner-72.webp") center / cover no-repeat;
+}
+.brandline {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  margin-bottom: 1rem;
+}
+.brandline h1 { margin: 0; }
+.mark-lg {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  flex: none;
+  display: block;
+}
+@media (max-width: 560px) {
+  .mark-lg { width: 72px; height: 72px; }
+  .brandline { gap: 0.85rem; }
+}
+
 /* On a phone the nav wraps to three rows; sticking it there would cost about
    a tenth of the viewport for the whole page. Let it scroll away instead. */
 @media (max-width: 700px) {
