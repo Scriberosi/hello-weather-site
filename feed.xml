@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>Hello Weather — Climate Magazine</title>
+<link href="https://scriberosi.github.io/hello-weather-site/issues/index.html"/>
+<link rel="self" href="https://scriberosi.github.io/hello-weather-site/feed.xml"/>
+<id>https://scriberosi.github.io/hello-weather-site/</id>
+<author><name>Hello Weather — Climate Magazine</name></author>
+<updated>1970-01-01T00:00:00Z</updated>
+</feed>

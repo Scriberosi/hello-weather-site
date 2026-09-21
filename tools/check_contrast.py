@@ -11,12 +11,20 @@ Run: python3 tools/check_contrast.py assets/site.css
 
 from __future__ import annotations
 
+import argparse
 import re
-import sys
 from pathlib import Path
 
 BODY_MIN = 4.5
 Rgb = tuple[int, int, int]
+
+# The palette tokens this gate reasons about. The stylesheet that defines them
+# (assets/site.css) is checked strictly; a stylesheet that only references them
+# (an extension such as assets/magazine.css) is checked with --extension, which
+# treats a token-less file as a no-op because the contrast it inherits is gated
+# on the file that owns the tokens.
+_CONTRAST_TOKENS = ("--surface-alpha", "--bg-from", "--bg-to", "--text",
+                    "--text-muted")
 
 
 def hex_to_rgb(value: str) -> Rgb:
@@ -57,7 +65,12 @@ def _token(block: str, name: str) -> str | None:
     return match.group(1).strip() if match else None
 
 
-def check_contrast(css: str) -> list[str]:
+def check_contrast(css: str, *, is_extension: bool = False) -> list[str]:
+    # Only an explicitly declared extension may skip the check when it defines
+    # no palette tokens. A primary stylesheet that is missing its palette is a
+    # real defect and must still be reported, not silently accepted.
+    if is_extension and not any(_token(css, name) for name in _CONTRAST_TOKENS):
+        return []
     problems: list[str] = []
     for scheme, block in _scheme_blocks(css).items():
         if not block.strip():
@@ -93,10 +106,18 @@ def check_contrast(css: str) -> list[str]:
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("usage: check_contrast.py <site.css>", file=sys.stderr)
-        return 2
-    problems = check_contrast(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    parser = argparse.ArgumentParser(description="WCAG-AA contrast gate")
+    parser.add_argument("stylesheet", type=Path)
+    parser.add_argument(
+        "--extension",
+        action="store_true",
+        help="a token-less extension stylesheet (e.g. assets/magazine.css) is "
+        "a no-op; without this flag a stylesheet must define the palette",
+    )
+    args = parser.parse_args()
+    problems = check_contrast(
+        args.stylesheet.read_text(encoding="utf-8"), is_extension=args.extension
+    )
     for problem in problems:
         print(problem)
     return 1 if problems else 0

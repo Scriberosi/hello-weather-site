@@ -23,6 +23,24 @@ REQUIRED_ANCHORS = {
     "sources",
 }
 
+# Markers for the magazine documents. An issue page (`<article class="issue">`)
+# and the archive index (`<main class="archive">`) are separate documents from
+# the single-page site; they legitimately carry none of its landmark anchors.
+# The generic structural checks (one h1, no heading skips, no dangling
+# fragments, alt text, on-origin resources) still apply to them.
+_MAGAZINE_MARKERS = ('class="issue"', 'class="archive"')
+
+
+def _required_for(html: str) -> set[str]:
+    """Which landmark anchors this document must carry.
+
+    The single-page reference site must carry all of REQUIRED_ANCHORS; a
+    magazine issue or archive page requires none of them.
+    """
+    if any(marker in html for marker in _MAGAZINE_MARKERS):
+        return set()
+    return REQUIRED_ANCHORS
+
 
 def webp_size(data: bytes) -> tuple[int, int]:
     """Width and height from a WebP byte string (VP8, VP8L, or VP8X)."""
@@ -128,7 +146,8 @@ def main() -> int:
         print("usage: check_page.py <index.html>", file=sys.stderr)
         return 2
     html_path = Path(sys.argv[1]).resolve()
-    problems = check_page(html_path, html_path.parent)
+    required = _required_for(html_path.read_text(encoding="utf-8"))
+    problems = check_page(html_path, html_path.parent, required=required)
     for problem in problems:
         print(problem)
     return 1 if problems else 0
