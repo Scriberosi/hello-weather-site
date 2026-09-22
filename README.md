@@ -134,3 +134,32 @@ displayed height and fades them out; the committed file is still the full page.
 The application's light/dark scheme follows the weather code and daylight, not
 the reader's operating system, so the scheme in a capture is whatever the app
 was showing at capture time. A dark capture has to be taken after local sunset.
+
+## Identity mark
+
+`assets/logo-master.png` is the full lockup (circular badge plus wordmark).
+The page never uses the lockup's own lettering: the wordmark on the page is
+live text in the page's own typeface, so it stays selectable, readable by
+assistive tech, and scalable. Only the badge is used as a mark.
+
+The badge sits at x 152, y 7, 944 x 944 in the master. Regenerate the derived
+files with:
+
+    cwebp -q 92 -crop 152 7 944 944 -resize 208 208 assets/logo-master.png -o assets/werner.webp
+    cwebp -q 92 -crop 152 7 944 944 -resize 72 72   assets/logo-master.png -o assets/werner-72.webp
+    cwebp -q 95 -crop 152 7 944 944 -resize 32 32   assets/logo-master.png -o /tmp/t32.webp
+    cwebp -q 95 -crop 152 7 944 944 -resize 180 180 assets/logo-master.png -o /tmp/t180.webp
+    dwebp /tmp/t32.webp  -o assets/favicon.png
+    dwebp /tmp/t180.webp -o assets/apple-touch-icon.png
+
+Note when re-measuring the badge: the pale sky at the top of the circle is
+nearly the same colour as the surrounding background, so a naive
+"find non-background pixels" bounding box starts about 30px too low and drags
+the wordmark into the crop. Derive the circle from its widest row instead —
+that row is the diameter and the vertical centre.
+
+The mark is displayed at 104px in the hero and 34px in the nav. The nav copy
+is a CSS background on an `aria-hidden` span, not an `<img>`, so the brand is
+announced once rather than twice. Both are circles; at 20px and below the
+illustration loses definition, so the favicon is 32px and no smaller mark is
+derived from it.
