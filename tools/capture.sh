@@ -26,6 +26,8 @@ MOBILE_W=390
 TALL_DESKTOP=9000
 TALL_MOBILE=12000
 QUALITY=80
+# Optional tag appended to every output name, e.g. SUFFIX=-sunny.
+SUFFIX="${SUFFIX:-}"
 WAIT_MS=20000
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -43,8 +45,8 @@ crop_and_report() {
          "clipped. Raise TALL_* and re-run." >&2
   fi
   "$CWEBP" -q "$QUALITY" -quiet -crop 0 0 "$width" "$height" \
-    "$TMP/$name.png" -o "$OUT/$name.webp"
-  echo "$name.webp ${width}x${height}"
+    "$TMP/$name.png" -o "$OUT/${name}${SUFFIX}.webp"
+  echo "${name}${SUFFIX}.webp ${width}x${height}"
 }
 
 shoot_desktop() {
@@ -93,6 +95,14 @@ fi
 shoot_desktop dashboard-desktop '#/'
 shoot_desktop history-desktop   '#/history?range=7d'
 shoot_desktop climate-desktop   '#/climate'
+
+# `tools/capture.sh desktop` stops here. The phone layout does not change with
+# the weather theme, so capturing a theme variant only needs the desktop set.
+if [ "${1:-}" = "desktop" ]; then
+  echo "Captured into $OUT"
+  exit 0
+fi
+
 shoot_mobile  dashboard-mobile  '#/'
 shoot_mobile  history-mobile    '#/history?range=7d'
 shoot_mobile  climate-mobile    '#/climate'
