@@ -5,7 +5,14 @@
 <link rel="self" href="https://scriberosi.github.io/hello-weather-site/feed.xml"/>
 <id>https://scriberosi.github.io/hello-weather-site/</id>
 <author><name>Hello Weather — Climate Magazine</name></author>
-<updated>2026-08-01T00:00:00Z</updated>
+<updated>2026-09-01T00:00:00Z</updated>
+<entry>
+<title>A mild and wetter-than-usual September</title>
+<link href="https://scriberosi.github.io/hello-weather-site/issues/2026-09.html"/>
+<id>https://scriberosi.github.io/hello-weather-site/issues/2026-09.html</id>
+<updated>2026-09-01T00:00:00Z</updated>
+<summary>September was mild against both comparison periods, while rainfall finished above the usual level.</summary>
+</entry>
 <entry>
 <title>A warm August punctuated by rain</title>
 <link href="https://scriberosi.github.io/hello-weather-site/issues/2026-08.html"/>
